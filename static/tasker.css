@@ -3,8 +3,8 @@ body {
 }
 
 .navbar-brand {
-    background: url(finished_work.png) no-repeat 10px 50%;
-    padding-left: 50px;
+    background: url(list_accept.png) no-repeat 15px 50%;
+    padding-left: 55px;
 }
 
 .well h2 {

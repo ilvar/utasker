@@ -16,14 +16,13 @@ pip install -r ./requirements.txt
 python tasker.py
 ```
 
-And navigate to http://localhost:3000/
+And navigate to http://localhost:8080/
 
 ## TODO
 
 1. Profile (setting up weekends and working hours)
 1. Tasks sorting by time
 2. Preview of parsed task "as you type"
-4. Better favicon
 7. OG tags for better sharing
 3. Import/export
 5. Better timing
