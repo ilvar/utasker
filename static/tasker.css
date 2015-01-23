@@ -1,0 +1,33 @@
+body {
+    margin-top: 70px;
+}
+
+.navbar-brand {
+    background: url(finished_work.png) no-repeat 10px 50%;
+    padding-left: 50px;
+}
+
+.well h2 {
+    font-weight: bold;
+    margin: 0;
+    font-size: 18px;
+}
+
+i.time {
+    display: block;
+}
+
+.btn-toolbar {
+    margin-top: 0.3em;
+}
+
+.btn-toolbar .btn-group.btn-group-left {
+    float: right;
+}
+
+.footer {
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+    text-align: center;
+}
