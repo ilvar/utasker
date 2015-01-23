@@ -69,7 +69,7 @@ taskerApp.controller('TasksCtrl', ['$scope', '$rootScope', function($scope, $roo
           } else if (task_date < now.add(2).hours()) {
             t.status = 'warning';
           } else {
-            t.status = 'info';
+            t.status = 'default';
           }
         } else if (t.is_tomorrow) {
           t.from_now = moment(task_date).format('HH:mm');

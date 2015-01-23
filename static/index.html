@@ -31,12 +31,16 @@
         <div class="navbar-header">
           <a class="navbar-brand" href="/">uTasker</a>
         </div>
-        <div id="navbar" class="collapse navbar-collapse">
+        <div id="navbar">
           <ul class="nav navbar-nav">
             <li ng-class="{'active': menu_section == 'tasks' }"><a href="#/">Tasks</a></li>
             <li ng-class="{'active': menu_section == 'profile' }"><a href="#/profile">Profile</a></li>
           </ul>
-        </div><!--/.nav-collapse -->
+        </div>
+        <p class="navbar-text navbar-right">
+          Created for humans.
+          <a href="https://github.com/ilvar/utasker" class="navbar-link">Source code on Github</a>
+        </p>
       </div>
     </nav>
 
@@ -150,12 +154,5 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/angular.js/1.3.10/angular.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/angular.js/1.3.10/angular-route.min.js"></script>
     <script src="/static/tasker.js"></script>
-
-    <div class="footer">
-      <div class="container">
-        Created with <span class="glyphicon glyphicon-heart" title="love"></span>
-        for <span class="glyphicon glyphicon-user" title="humans"></span>
-      </div>
-    </div>
   </body>
 </html>

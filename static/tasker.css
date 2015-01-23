@@ -24,10 +24,3 @@ i.time {
 .btn-toolbar .btn-group.btn-group-left {
     float: right;
 }
-
-.footer {
-    position: absolute;
-    bottom: 0;
-    width: 100%;
-    text-align: center;
-}
