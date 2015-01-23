@@ -25,6 +25,6 @@ And navigate to http://localhost:8080/
 2. Preview of parsed task "as you type"
 7. OG tags for better sharing
 3. Import/export
-5. Better timing
 6. Move from Timeless button
-
+7. Confirmation for Delete
+8. Tasks editing
