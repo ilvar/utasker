@@ -22,4 +22,5 @@ And navigate to http://localhost:3000/
 
 1. Profile (setting up weekends and working hours)
 2. Preview of parsed task "as you type"
+3. Import/export
 
