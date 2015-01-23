@@ -21,6 +21,7 @@ And navigate to http://localhost:3000/
 ## TODO
 
 1. Profile (setting up weekends and working hours)
+1. Tasks sorting by time
 2. Preview of parsed task "as you type"
 4. Better favicon
 7. OG tags for better sharing
