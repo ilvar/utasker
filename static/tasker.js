@@ -97,7 +97,7 @@ taskerApp.controller('TasksCtrl', ['$scope', '$rootScope', function($scope, $roo
   };
 
   $scope.getTasksIncoming = function() {
-    var limit_date = Date.today().add(1).days();
+    var limit_date = Date.today().add(1).days().set({ hour: 23, minute: 59 });
     return $scope.augmentTasks(_.filter($scope.tasks, function(task) {
       return new Date(task.date) > limit_date;
     }), 'incoming');
