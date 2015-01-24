@@ -50,8 +50,8 @@ taskerApp.controller('TasksCtrl', ['$scope', '$rootScope', function($scope, $roo
 
   $scope.DATE_FORMAT = 'YYYY MM DD';
 
-  $scope.today_date = moment(new Date().add(0).days()).format('dddd MMM D')
-  $scope.tomorrow_date = moment(new Date().add(1).days()).format('dddd MMM D')
+  $scope.today_date = moment(new Date().add(0).days()).format('dddd MMM D');
+  $scope.tomorrow_date = moment(new Date().add(1).days()).format('dddd MMM D');
 
   $scope.augmentTasks = function(tasks, column) {
     var active_tasks = _.filter(tasks, function(t) {
@@ -82,7 +82,7 @@ taskerApp.controller('TasksCtrl', ['$scope', '$rootScope', function($scope, $roo
         } else if (t.is_tomorrow) {
           t.from_now = moment(task_date).format('HH:mm');
         } else {
-          t.from_now = moment(task_date).format('D MMMM');
+          t.from_now = moment(task_date).format('dddd MMM D');
         }
       }
 
