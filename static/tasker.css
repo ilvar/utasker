@@ -24,3 +24,7 @@ i.time {
 .btn-toolbar .btn-group.btn-group-left {
     float: right;
 }
+
+.form-profile input {
+    width: 55px;
+}

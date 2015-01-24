@@ -20,10 +20,11 @@ And navigate to http://localhost:8080/
 
 ## TODO
 
-1. Profile (setting up weekends and working hours)
-2. Preview of parsed task "as you type"
-7. OG tags for better sharing
-3. Import/export
-6. Move from Timeless button
-7. Confirmation for Delete
-8. Tasks editing
+1. Preview of parsed task "as you type"
+1. OG tags for better sharing
+1. Import/export
+1. Move from Timeless button
+1. Confirmation for Delete
+1. Tasks editing
+1. Projects and dates suggestions
+1. Projects management

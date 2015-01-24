@@ -1,4 +1,4 @@
-var taskerApp = angular.module('taskerApp', ['ngRoute']);
+var taskerApp = angular.module('taskerApp', ['ngRoute', 'ui.bootstrap']);
 
 taskerApp.config(['$routeProvider', function($routeProvider) {
   $routeProvider.
@@ -17,6 +17,28 @@ taskerApp.config(['$routeProvider', function($routeProvider) {
 
 taskerApp.controller('ProfileCtrl', ['$scope', '$rootScope', function($scope, $rootScope) {
   $rootScope.menu_section = 'profile';
+
+  var profile_data = localStorage.getItem('utasker_profile');
+  if (profile_data) {
+    $scope.profile = JSON.parse(profile_data);
+    $scope.profile.day_start = new Date($scope.profile.day_start);
+    $scope.profile.day_end = new Date($scope.profile.day_end);
+  } else {
+    $scope.profile = {};
+    $scope.profile.day_start = new Date().set({hour: 10, minute: 0, second: 0, millisecond: 0});
+    $scope.profile.day_end = new Date().set({hour: 20, minute: 0, second: 0, millisecond: 0});
+  }
+
+  $scope.alerts = [];
+
+  $scope.saveProfile = function() {
+    localStorage.setItem('utasker_profile', angular.toJson($scope.profile));
+    $scope.alerts.push({type: 'success', msg: 'Data saved successfully'});
+  };
+
+  $scope.closeAlert = function(index) {
+    $scope.alerts.splice(index, 1);
+  }
 }]);
 
 taskerApp.controller('TasksCtrl', ['$scope', '$rootScope', function($scope, $rootScope) {
@@ -27,6 +49,17 @@ taskerApp.controller('TasksCtrl', ['$scope', '$rootScope', function($scope, $roo
     $scope.tasks = JSON.parse(tasks_data);
   } else {
     $scope.tasks = [];
+  }
+
+  var profile_data = localStorage.getItem('utasker_profile');
+  if (profile_data) {
+    $scope.profile = JSON.parse(profile_data);
+    $scope.profile.day_start = new Date($scope.profile.day_start);
+    $scope.profile.day_end = new Date($scope.profile.day_end);
+  } else {
+    $scope.profile = {};
+    $scope.profile.day_start = new Date().set({hour: 10, minute: 0, second: 0, millisecond: 0});
+    $scope.profile.day_end = new Date().set({hour: 20, minute: 0, second: 0, millisecond: 0});
   }
 
   $scope.tasks = _.reject($scope.tasks, function(task) {
@@ -44,7 +77,7 @@ taskerApp.controller('TasksCtrl', ['$scope', '$rootScope', function($scope, $roo
     $scope.tasks = _.sortBy($scope.tasks, function (task) {
       return new Date(task.date);
     });
-  }
+  };
 
   $scope.sortTasks();
 
@@ -94,20 +127,22 @@ taskerApp.controller('TasksCtrl', ['$scope', '$rootScope', function($scope, $roo
     var today = Date.today();
     var today_str = moment(today).format($scope.DATE_FORMAT);
     return $scope.augmentTasks(_.filter($scope.tasks, function(task) {
-      return new Date(task.date) <= today || today_str == task.date_str;
+      return task.date && (new Date(task.date) <= today || today_str == task.date_str);
     }), 'today');
   };
 
   $scope.getTasksTomorrow = function() {
     var tomorrow = Date.today().add(1).days();
     var tomorrow_str = moment(tomorrow).format($scope.DATE_FORMAT);
-    return $scope.augmentTasks(_.where($scope.tasks, {date_str: tomorrow_str}), 'tomorrow');
+    return $scope.augmentTasks(_.filter($scope.tasks, function(task) {
+      return task.date && tomorrow_str == task.date_str;
+    }), 'tomorrow');
   };
 
   $scope.getTasksIncoming = function() {
     var limit_date = Date.today().add(1).days().set({ hour: 23, minute: 59 });
     return $scope.augmentTasks(_.filter($scope.tasks, function(task) {
-      return new Date(task.date) > limit_date;
+      return task.date && new Date(task.date) > limit_date;
     }), 'incoming');
   };
 
@@ -133,22 +168,32 @@ taskerApp.controller('TasksCtrl', ['$scope', '$rootScope', function($scope, $roo
           task_date = new Date().add(1).hours();
         }
       }
+
+      if (task_date.getHours() == 0 && task_date.getMinutes() == 0) {
+        var task_update = {year: task_date.getFullYear(), month: task_date.getMonth(), day: task_date.getDate()};
+        var begin_date = $scope.profile.day_start.set(task_update);
+        if (task_date < begin_date) {
+          task_date = begin_date;
+        }
+      }
+
       $scope.new_task_data.date = task_date;
       $scope.new_task_data.date_str = moment(task_date).format($scope.DATE_FORMAT);
     }
   };
 
   $scope.saveData = function() {
+    _.each($scope.tasks, function(task) {
+      if (task.date) {
+        task.date = new Date(task.date);
+        task.date.setMinutes(Math.floor(task.date.getMinutes() / 15) * 15);
+        task.date_str = moment(task.date).format($scope.DATE_FORMAT);
+      } else {
+        task.date_str = null;
+      }
+    });
     localStorage.setItem('utasker_tasks', angular.toJson($scope.tasks));
   };
-
-  $scope.$watchCollection('tasks', function() {
-    $scope.saveData();
-  });
-
-  $scope.$watch('tasks', function() {
-    $scope.saveData();
-  });
 
   $scope.addTask = function() {
     var bits = _.map($scope.new_task_string.split('@'), function(s) {
@@ -169,19 +214,37 @@ taskerApp.controller('TasksCtrl', ['$scope', '$rootScope', function($scope, $roo
     $scope.new_task_string = '';
     $scope.new_task_data = {};
     $scope.sortTasks();
+    $scope.saveData();
   };
 
   $scope.deleteTask = function(task) {
     $scope.tasks = _.reject($scope.tasks, function(t) {
       return t == task;
     });
+    $scope.saveData();
   };
 
   $scope.moveRight = function(task) {
     var task_date;
+    var now = new Date();
     if (!task.is_timeless) {
       task_date = new Date(task.date);
-      task.date = task_date.add(1).days();
+      if (task_date < now) {
+        task_date = now;
+      }
+      task_date = task_date.add(1).days();
+
+      var task_update = {year: task_date.getFullYear(), month: task_date.getMonth(), day: task_date.getDate()};
+      var begin_date = $scope.profile.day_start.set(task_update);
+      if (task_date < begin_date) {
+        task_date = begin_date;
+      }
+      var end_date = $scope.profile.day_end.set(task_update);
+      if (task_date > end_date) {
+        task_date = end_date.add(-1).hours();
+      }
+
+      task.date = task_date;
       task.date_str = moment(task.date).format($scope.DATE_FORMAT);
       $scope.sortTasks();
       $scope.saveData();
@@ -190,9 +253,24 @@ taskerApp.controller('TasksCtrl', ['$scope', '$rootScope', function($scope, $roo
 
   $scope.moveLeft = function(task) {
     var task_date;
+    var now = new Date();
     if (!task.is_timeless && !task.is_today) {
-      task_date = new Date(task.date);
-      task.date = task_date.add(-1).days();
+      task_date = new Date(task.date).add(-1).days();
+      if (task_date < now) {
+        task_date = now;
+      }
+
+      var task_update = {year: task_date.getFullYear(), month: task_date.getMonth(), day: task_date.getDate()};
+      var begin_date = $scope.profile.day_start.set(task_update);
+      if (task_date < begin_date) {
+        task_date = begin_date;
+      }
+      var end_date = $scope.profile.day_end.set(task_update);
+      if (task_date > end_date) {
+        task_date = end_date.add(-1).hours();
+      }
+
+      task.date = task_date;
       task.date_str = moment(task.date).format($scope.DATE_FORMAT);
       $scope.sortTasks();
       $scope.saveData();
@@ -224,6 +302,10 @@ taskerApp.controller('TasksCtrl', ['$scope', '$rootScope', function($scope, $roo
     task.done = true;
     $scope.saveData();
   };
+
+  setInterval(function() {
+    $scope.$digest();
+  }, 60 * 1000);
 
 }]);
 
