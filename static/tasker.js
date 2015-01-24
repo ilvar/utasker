@@ -40,6 +40,14 @@ taskerApp.controller('TasksCtrl', ['$scope', '$rootScope', function($scope, $roo
     }
   });
 
+  $scope.sortTasks = function() {
+    $scope.tasks = _.sortBy($scope.tasks, function (task) {
+      return new Date(task.date);
+    });
+  }
+
+  $scope.sortTasks();
+
   $scope.DATE_FORMAT = 'YYYY MM DD';
 
   $scope.today_date = moment(new Date().add(0).days()).format('dddd MMM D')
@@ -160,6 +168,7 @@ taskerApp.controller('TasksCtrl', ['$scope', '$rootScope', function($scope, $roo
     $scope.tasks.push($scope.new_task_data);
     $scope.new_task_string = '';
     $scope.new_task_data = {};
+    $scope.sortTasks();
   };
 
   $scope.deleteTask = function(task) {
@@ -174,6 +183,7 @@ taskerApp.controller('TasksCtrl', ['$scope', '$rootScope', function($scope, $roo
       task_date = new Date(task.date);
       task.date = task_date.add(1).days();
       task.date_str = moment(task.date).format($scope.DATE_FORMAT);
+      $scope.sortTasks();
       $scope.saveData();
     }
   };
@@ -184,6 +194,7 @@ taskerApp.controller('TasksCtrl', ['$scope', '$rootScope', function($scope, $roo
       task_date = new Date(task.date);
       task.date = task_date.add(-1).days();
       task.date_str = moment(task.date).format($scope.DATE_FORMAT);
+      $scope.sortTasks();
       $scope.saveData();
     }
   };
@@ -204,6 +215,7 @@ taskerApp.controller('TasksCtrl', ['$scope', '$rootScope', function($scope, $roo
       }
       task.date = task_date.add(1).hours();
       task.date_str = moment(task.date).format($scope.DATE_FORMAT);
+      $scope.sortTasks();
       $scope.saveData();
     }
   };
