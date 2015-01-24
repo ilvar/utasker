@@ -63,6 +63,17 @@
         </div>
       </form>
 
+      <div class="panel panel-default">
+        <div class="panel-heading" ng-show="new_task_data.title">
+          <span class="glyphicon glyphicon-ok text-success"></span>
+          <b>{{ new_task_data.project }}</b> {{ new_task_data.title }} <i>{{ new_task_data.from_now }}</i>
+        </div>
+        <div class="panel-heading" ng-hide="new_task_data.title">
+          <span class="glyphicon glyphicon-remove text-danger"></span>
+          No task data
+        </div>
+      </div>
+
       <div class="row">
         <div class="col-lg-3 col-md-4 col-sm-6 col-xs-12">
           <div class="well well-sm">

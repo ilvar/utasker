@@ -28,3 +28,7 @@ i.time {
 .form-profile input {
     width: 55px;
 }
+
+.panel-heading.glyphicon-ok {
+    float: right;
+}

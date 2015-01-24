@@ -20,7 +20,6 @@ And navigate to http://localhost:8080/
 
 ## TODO
 
-1. Preview of parsed task "as you type"
 1. OG tags for better sharing
 1. Import/export
 1. Move from Timeless button

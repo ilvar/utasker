@@ -103,7 +103,7 @@ taskerApp.controller('TasksCtrl', ['$scope', '$rootScope', function($scope, $roo
 
       if (t.date) {
         task_date = new Date(t.date);
-        if (column == 'today') {
+        if (t.is_today) {
           t.from_now = moment(task_date).fromNow();
           if (task_date < now) {
             t.status = 'danger';
@@ -156,9 +156,9 @@ taskerApp.controller('TasksCtrl', ['$scope', '$rootScope', function($scope, $roo
   $scope.new_task_data = {};
 
   $scope.parseDate = function(bit) {
+    var now = new Date();
     var task_date = Date.parse(bit);
     var next_task_date;
-    var now = new Date();
     if (task_date) {
       if (task_date < now) {
         next_task_date = Date.parse('Next ' + bit);
@@ -195,26 +195,50 @@ taskerApp.controller('TasksCtrl', ['$scope', '$rootScope', function($scope, $roo
     localStorage.setItem('utasker_tasks', angular.toJson($scope.tasks));
   };
 
-  $scope.addTask = function() {
+  $scope.parseString = function() {
     var bits = _.map($scope.new_task_string.split('@'), function(s) {
       return s.trim();
     });
     $scope.new_task_data.title = bits[0];
-    if (bits.length == 2) {
+    if (bits.length == 2 && bits[1]) {
       $scope.parseDate(bits[1]);
       if (!$scope.new_task_data.date) {
         $scope.new_task_data.project = bits[1];
       }
     }
-    if (bits.length == 3) {
+    if (bits.length == 3 && bits[2]) {
       $scope.parseDate(bits[2]);
       $scope.new_task_data.project = bits[1];
     }
-    $scope.tasks.push($scope.new_task_data);
-    $scope.new_task_string = '';
-    $scope.new_task_data = {};
-    $scope.sortTasks();
-    $scope.saveData();
+    if ($scope.new_task_data.date) {
+      var task_date = $scope.new_task_data.date;
+      var now = new Date();
+      var today = new Date().clearTime().add(1).days();
+      var tomorrow = new Date().clearTime().add(2).days();
+      if (task_date.isBefore(today)) {
+        $scope.new_task_data.from_now = 'Today ' + moment(task_date).from(now);
+      } else if (task_date.isBefore(tomorrow)) {
+        $scope.new_task_data.from_now = 'Tomorrow ' + moment(task_date).format('HH:mm');
+      } else {
+        $scope.new_task_data.from_now = moment(task_date).format('dddd MMM D');
+      }
+    }
+
+  };
+
+  $scope.$watch('new_task_string', function() {
+    $scope.parseString();
+  });
+
+  $scope.addTask = function() {
+    $scope.parseString();
+    if ($scope.new_task_data.title) {
+      $scope.tasks.push($scope.new_task_data);
+      $scope.new_task_string = '';
+      $scope.new_task_data = {};
+      $scope.sortTasks();
+      $scope.saveData();
+    }
   };
 
   $scope.deleteTask = function(task) {
