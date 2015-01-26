@@ -233,11 +233,31 @@ taskerApp.controller('TasksCtrl', ['$scope', '$rootScope', function($scope, $roo
   $scope.addTask = function() {
     $scope.parseString();
     if ($scope.new_task_data.title) {
+      if ($scope.editing_task) {
+        $scope.tasks = _.reject($scope.tasks, function(t) {
+          return t == $scope.editing_task;
+        });
+        $scope.editing_task = null;
+      }
       $scope.tasks.push($scope.new_task_data);
+
       $scope.new_task_string = '';
       $scope.new_task_data = {};
       $scope.sortTasks();
       $scope.saveData();
+    }
+  };
+
+  $scope.editing_task = null;
+
+  $scope.editTask = function(task) {
+    $scope.editing_task = task;
+    $scope.new_task_string = task.title;
+    if (task.project) {
+      $scope.new_task_string += ' @ ' + task.project;
+    }
+    if (task.date) {
+      $scope.new_task_string += ' @ ' + moment(task.date).format('DD.MM.YYYY HH:mm');
     }
   };
 

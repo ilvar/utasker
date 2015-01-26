@@ -20,11 +20,9 @@ And navigate to http://localhost:8080/
 
 ## TODO
 
-1. OG tags for better sharing
 1. Import/export
 1. Move from Timeless button
 1. Confirmation for Delete
-1. Tasks editing
 1. Projects and dates suggestions
 1. Projects management
 1. Rewrite all timing in Moment

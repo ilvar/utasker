@@ -72,7 +72,9 @@
             <span class="input-group-btn">
               <button class="btn btn-success" type="submit">
                 <span class="glyphicon glyphicon-plus"></span>
-                Add (or <b>[Enter]</b>)
+                <span ng-hide="editing_task">Add</span>
+                <span ng-show="editing_task">Save</span>
+                (or <b>[Enter]</b>)
               </button>
             </span>
           </div><!-- /input-group -->
@@ -170,6 +172,9 @@
           </button>
           <button type="button" class="btn btn-info" title="Postpone 1 hour" ng-show="task.is_today" ng-click="postponeTask(task)">
             <span class="glyphicon glyphicon-time"></span>
+          </button>
+          <button type="button" class="btn btn-warning" title="Edit" ng-click="editTask(task)">
+            <span class="glyphicon glyphicon-pencil"></span>
           </button>
           <button type="button" class="btn btn-danger" title="Delete" ng-click="deleteTask(task)">
             <span class="glyphicon glyphicon-trash"></span>

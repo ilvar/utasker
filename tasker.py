@@ -12,7 +12,7 @@ def serve_static(filename):
     return bottle.static_file(filename, root=os.path.abspath('./static/'))
 
 @bottle.route('/favicon.ico')
-def serve_favicon(filename):
+def serve_favicon():
     return bottle.static_file('favicon.ico', root=os.path.abspath('./static/'))
 
 if 'PORT' in os.environ:
