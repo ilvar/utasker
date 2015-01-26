@@ -6,6 +6,14 @@ taskerApp.config(['$routeProvider', function($routeProvider) {
       templateUrl: 'profile.html',
       controller: 'ProfileCtrl'
     }).
+    when('/save', {
+      templateUrl: 'export.html',
+      controller: 'SaveCtrl'
+    }).
+    when('/archives/:archive', {
+      templateUrl: 'import.html',
+      controller: 'LoadCtrl'
+    }).
     when('/', {
       templateUrl: 'tasks.html',
       controller: 'TasksCtrl'
@@ -39,6 +47,30 @@ taskerApp.controller('ProfileCtrl', ['$scope', '$rootScope', function($scope, $r
   $scope.closeAlert = function(index) {
     $scope.alerts.splice(index, 1);
   }
+}]);
+
+taskerApp.controller('SaveCtrl', ['$scope', '$rootScope', '$http', function($scope, $rootScope, $http) {
+  $rootScope.menu_section = 'save';
+
+  $scope.save_url = '';
+
+  $scope.saveData = function() {
+    var data = localStorage.getItem('utasker_tasks') || '[]';
+    $http.post('/save/', data).success(function(result) {
+      $scope.save_url = result.url;
+      $('#export_qr').qrcode(result.url);
+    })
+  };
+}]);
+
+taskerApp.controller('LoadCtrl', ['$scope', '$http', '$routeParams', '$location', function($scope, $http, $routeParams, $location) {
+  $http.get('/archives/' + $routeParams.archive + '.json').success(function(result) {
+    console.log(result);
+    if (result.archive) {
+      localStorage.setItem('utasker_tasks', JSON.stringify(result.archive));
+      $location.path('/');
+    }
+  });
 }]);
 
 taskerApp.controller('TasksCtrl', ['$scope', '$rootScope', function($scope, $rootScope) {

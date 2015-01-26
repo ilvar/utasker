@@ -20,7 +20,6 @@ And navigate to http://localhost:8080/
 
 ## TODO
 
-1. Import/export
 1. Move from Timeless button
 1. Confirmation for Delete
 1. Projects and dates suggestions
