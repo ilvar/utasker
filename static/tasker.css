@@ -32,3 +32,36 @@ i.time {
 .panel-heading.glyphicon-ok {
     float: right;
 }
+
+.panel-heading .open-modal {
+    float: right;
+    margin: -5px;
+}
+
+.task-note {
+    overflow: hidden;
+    height: 1.3em;
+}
+
+.task-note .glyphicon {
+    margin-top: 0.2em;
+    float: right;
+}
+
+.task-note .glyphicon-chevron-down {
+    display: block;
+}
+.task-note .glyphicon-chevron-up {
+    display: none;
+}
+
+.task-note-show {
+    height: auto;
+}
+
+.task-note-show .glyphicon-chevron-down {
+    display: none;
+}
+.task-note-show .glyphicon-chevron-up {
+    display: block;
+}

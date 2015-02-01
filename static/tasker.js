@@ -73,7 +73,7 @@ taskerApp.controller('LoadCtrl', ['$scope', '$http', '$routeParams', '$location'
   });
 }]);
 
-taskerApp.controller('TasksCtrl', ['$scope', '$rootScope', function($scope, $rootScope) {
+taskerApp.controller('TasksCtrl', ['$scope', '$rootScope', '$modal', function($scope, $rootScope, $modal) {
   $rootScope.menu_section = 'tasks';
 
   var tasks_data = localStorage.getItem('utasker_tasks');
@@ -266,6 +266,8 @@ taskerApp.controller('TasksCtrl', ['$scope', '$rootScope', function($scope, $roo
     $scope.parseString();
     if ($scope.new_task_data.title) {
       if ($scope.editing_task) {
+        $scope.new_task_data.url = $scope.editing_task.url;
+        $scope.new_task_data.note = $scope.editing_task.note;
         $scope.tasks = _.reject($scope.tasks, function(t) {
           return t == $scope.editing_task;
         });
@@ -379,11 +381,43 @@ taskerApp.controller('TasksCtrl', ['$scope', '$rootScope', function($scope, $roo
     $scope.saveData();
   };
 
+  $scope.editAdditionalData = function() {
+    if ($scope.editing_task) {
+      var modalInstance = $modal.open({
+        templateUrl: 'taskData.html',
+        controller: 'TaskDataCtrl',
+        resolve: {
+          task: function () {
+            return $scope.editing_task;
+          }
+        }
+      });
+
+      modalInstance.result.then(function (task) {
+        $scope.editing_task.note = task.note;
+        $scope.editing_task.url = task.url;
+        $scope.addTask();
+      });
+    }
+  };
+
   setInterval(function() {
     $scope.$digest();
   }, 60 * 1000);
 
 }]);
+
+taskerApp.controller('TaskDataCtrl', function ($scope, $modalInstance, task) {
+  $scope.task = task;
+
+  $scope.saveTaskData = function () {
+    $modalInstance.close($scope.task);
+  };
+
+  $scope.cancel = function () {
+    $modalInstance.dismiss('cancel');
+  };
+});
 
 taskerApp.directive('taskBlock', function() {
   return {

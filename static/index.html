@@ -29,6 +29,7 @@
     <!-- Bootstrap core CSS -->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.2/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/bootswatch/3.3.1/flatly/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.2.0/animate.min.css" rel="stylesheet">
 
     <!-- Custom styles for this template -->
     <link href="/static/tasker.css" rel="stylesheet">
@@ -86,6 +87,12 @@
         <div class="panel-heading" ng-show="new_task_data.title">
           <span class="glyphicon glyphicon-ok text-success"></span>
           <b>{{ new_task_data.project }}</b> {{ new_task_data.title }} <i>{{ new_task_data.from_now }}</i>
+          <span ng-show="editing_task" class="open-modal">
+            <button class="btn btn-sm btn-warning" ng-click="editAdditionalData()">
+              <span class="glyphicon glyphicon-pencil"></span>
+              Additional data
+            </button>
+          </span>
         </div>
         <div class="panel-heading" ng-hide="new_task_data.title">
           <span class="glyphicon glyphicon-remove text-danger"></span>
@@ -186,6 +193,12 @@
         <b>{{ task.project }}</b> {{ task.title }}
       </div>
       <i class="time" ng-show="task.from_now">{{ task.from_now }}</i>
+      <span class="time" ng-show="task.url"><a href="{{ task.url }}" target="_blank">{{ task.url }}</a></span>
+      <div class="task-note" ng-show="task.note" ng-class="{'task-note-show': task.show_note}" ng-click="task.show_note = !task.show_note">
+        <i class="glyphicon glyphicon-chevron-down"></i>
+        <i class="glyphicon glyphicon-chevron-up"></i>
+        {{ task.note }}
+      </div>
       <div class="btn-toolbar" role="toolbar">
         <div class="btn-group btn-group-sm" role="group">
           <button type="button" class="btn btn-success" title="Mark done" ng-click="markDone(task)">
@@ -212,6 +225,28 @@
             <span class="glyphicon glyphicon-inbox"></span>
           </button>
         </div>
+      </div>
+    </script>
+
+    <script type="text/ng-template" id="taskData.html">
+      <div class="modal-header">
+        <h3 class="modal-title">Additional task data</h3>
+      </div>
+      <div class="modal-body">
+        <form>
+            <div class="form-group">
+              <label>Note</label>
+              <textarea ng-model="task.note" class="form-control"></textarea>
+            </div>
+            <div class="form-group">
+              <label>URL</label>
+              <input type="url" ng-model="task.url" class="form-control" />
+            </div>
+          </form>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-primary" ng-click="saveTaskData()">OK</button>
+        <button class="btn btn-warning" ng-click="cancel()">Cancel</button>
       </div>
     </script>
 
