@@ -48,10 +48,10 @@ i.time {
     float: right;
 }
 
-.task-note .glyphicon-chevron-down {
+.task-note .fa-chevron-down {
     display: block;
 }
-.task-note .glyphicon-chevron-up {
+.task-note .fa-chevron-up {
     display: none;
 }
 
@@ -59,9 +59,9 @@ i.time {
     height: auto;
 }
 
-.task-note-show .glyphicon-chevron-down {
+.task-note-show .fa-chevron-down {
     display: none;
 }
-.task-note-show .glyphicon-chevron-up {
+.task-note-show .fa-chevron-up {
     display: block;
 }
