@@ -189,12 +189,24 @@ taskerApp.controller('TasksCtrl', ['$scope', '$rootScope', '$modal', function($s
 
   $scope.parseDate = function(bit) {
     var now = new Date();
-    var task_date = Date.parse(bit);
+    var task_date = moment(bit, 'DD.MM.YYYY hh:mm');
+    var strictDate = true;
+    if (!task_date.isValid()) {
+      task_date = moment(bit, 'DD.MM.YYYY');
+      if (!task_date.isValid()) {
+        task_date = moment(bit, 'DD.MM');
+        if (!task_date.isValid()) {
+          task_date = moment(Date.parse(bit));
+          strictDate = false;
+        }
+      }
+    }
+    task_date = task_date.toDate();
     var next_task_date;
     if (task_date) {
       if (task_date < now) {
         next_task_date = Date.parse('Next ' + bit);
-        if (next_task_date && next_task_date >= now) {
+        if (!strictDate && next_task_date && next_task_date >= now) {
           task_date = next_task_date;
         } else {
           task_date = new Date().add(1).hours();
@@ -258,8 +270,10 @@ taskerApp.controller('TasksCtrl', ['$scope', '$rootScope', '$modal', function($s
 
   };
 
-  $scope.$watch('new_task_string', function() {
-    $scope.parseString();
+  $scope.$watch('new_task_string', function(newValue, oldValue) {
+    if (newValue.length != oldValue.length) {
+      $scope.parseString();
+    }
   });
 
   $scope.addTask = function() {
@@ -291,6 +305,7 @@ taskerApp.controller('TasksCtrl', ['$scope', '$rootScope', '$modal', function($s
       $scope.new_task_string += ' @ ' + task.project;
     }
     if (task.date) {
+      console.log(task.date);
       $scope.new_task_string += ' @ ' + moment(task.date).format('DD.MM.YYYY HH:mm');
     }
   };
