@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 import urlparse
+import datetime
 import os
 
 import bottle
@@ -19,16 +20,41 @@ def index():
 
 @bottle.route('/save/', method='POST')
 def save():
-    archive_id = archives.insert({'tasks': bottle.request.json})
-    return {'ok': True, 'url': 'https://utasker.herokuapp.com/#/archives/%s' % archive_id}
+    archive_id = archives.insert({
+        'dt': datetime.datetime.now(),
+        'tasks': bottle.request.json,
+    })
+    return {
+        'ok': True,
+        'dt': datetime.datetime.now().strftime('%s'),
+        'url': 'https://utasker.herokuapp.com/#/archives/%s' % archive_id,
+        'key': str(archive_id),
+    }
 
 @bottle.route('/archives/<archive_id>.json')
 def load_archive(archive_id):
     archive = archives.find_one({'_id': bson.ObjectId(archive_id)})
     if archive:
-        return {'ok': True, 'archive': archive['tasks']}
+        return {
+            'ok': True,
+            'dt': archive.get('dt', datetime.datetime.now()).strftime('%s'),
+            'archive': archive['tasks'],
+            'key': archive_id,
+        }
     else:
         return {'error': 'Archive not found'}
+
+@bottle.route('/archives/<archive_id>.json', method='POST')
+def save_archive(archive_id):
+    archives.update({'_id': bson.ObjectId(archive_id)}, {
+        'dt': datetime.datetime.now(),
+        'tasks': bottle.request.json,
+    })
+    return {
+        'ok': True,
+        'dt': datetime.datetime.now().strftime('%s'),
+        'key': archive_id,
+    }
 
 @bottle.route('/static/<filename>')
 def serve_static(filename):

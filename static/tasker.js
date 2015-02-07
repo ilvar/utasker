@@ -56,7 +56,13 @@ taskerApp.controller('SaveCtrl', ['$scope', '$rootScope', '$http', function($sco
 
   $scope.saveData = function() {
     var data = localStorage.getItem('utasker_tasks') || '[]';
-    $http.post('/save/', data).success(function(result) {
+    var url = '/save/';
+    if ($scope.server_key) {
+      url = '/archives/' + $scope.server_key + '.json';
+    }
+    $http.post(url, data).success(function(result) {
+      localStorage.setItem('utasker_key', result.key);
+      localStorage.setItem('utasker_dt', parseInt(result.dt));
       $scope.save_url = result.url;
       $('#export_qr').qrcode(result.url);
     })
@@ -65,15 +71,16 @@ taskerApp.controller('SaveCtrl', ['$scope', '$rootScope', '$http', function($sco
 
 taskerApp.controller('LoadCtrl', ['$scope', '$http', '$routeParams', '$location', function($scope, $http, $routeParams, $location) {
   $http.get('/archives/' + $routeParams.archive + '.json').success(function(result) {
-    console.log(result);
     if (result.archive) {
+      localStorage.setItem('utasker_key', result.key);
+      localStorage.setItem('utasker_dt', parseInt(result.dt));
       localStorage.setItem('utasker_tasks', JSON.stringify(result.archive));
       $location.path('/');
     }
   });
 }]);
 
-taskerApp.controller('TasksCtrl', ['$scope', '$rootScope', '$modal', function($scope, $rootScope, $modal) {
+taskerApp.controller('TasksCtrl', ['$scope', '$rootScope', '$modal', '$http', '$interval', function($scope, $rootScope, $modal, $http, $interval) {
   $rootScope.menu_section = 'tasks';
 
   var tasks_data = localStorage.getItem('utasker_tasks');
@@ -92,6 +99,35 @@ taskerApp.controller('TasksCtrl', ['$scope', '$rootScope', '$modal', function($s
     $scope.profile = {};
     $scope.profile.day_start = new Date().set({hour: 10, minute: 0, second: 0, millisecond: 0});
     $scope.profile.day_end = new Date().set({hour: 20, minute: 0, second: 0, millisecond: 0});
+  }
+
+  $scope.server_key = localStorage.getItem('utasker_key');
+
+  $scope.syncWithServer = function() {
+    var local_dt = localStorage.getItem('utasker_dt');
+    if ($scope.server_key && local_dt) {
+      $http.get('/archives/' + $scope.server_key + '.json').success(function(result) {
+        if (result.archive && parseInt(result.dt) > parseInt(local_dt)) {
+          localStorage.setItem('utasker_dt', parseInt(result.dt));
+          localStorage.setItem('utasker_tasks', JSON.stringify(result.archive));
+          $scope.tasks = result.archive;
+          $scope.sortTasks();
+        }
+      });
+    }
+  };
+
+  if ($scope.server_key) {
+    $http.get('/archives/' + $scope.server_key + '.json').success(function(result) {
+      if (result.archive) {
+        localStorage.setItem('utasker_dt', parseInt(result.dt));
+        localStorage.setItem('utasker_tasks', JSON.stringify(result.archive));
+        $scope.tasks = result.archive;
+        $scope.sortTasks();
+      }
+    });
+
+    $interval($scope.syncWithServer, 60 * 1000);
   }
 
   $scope.tasks = _.reject($scope.tasks, function(task) {
@@ -237,6 +273,13 @@ taskerApp.controller('TasksCtrl', ['$scope', '$rootScope', '$modal', function($s
       }
     });
     localStorage.setItem('utasker_tasks', angular.toJson($scope.tasks));
+    $scope.pushToServer();
+  };
+
+  $scope.pushToServer = function() {
+    if ($scope.server_key) {
+        $http.post('/archives/'+$scope.server_key+'.json', angular.toJson($scope.tasks));
+    }
   };
 
   $scope.parseString = function() {
